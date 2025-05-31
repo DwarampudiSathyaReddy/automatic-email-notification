@@ -1,180 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart - Back In Stock Notifier</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart - Back In Stock Notifier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    <header class="bg-gradient-to-r from-green-700 to-green-900 text-white py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">Back In Stock Notifier</h1>
-            <div class="flex items-center space-x-4">
-                <div class="relative flex items-center space-x-2">
-                    <svg class="absolute left-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0"></path>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Search products..." 
-                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800 shadow-md w-64 transition-all duration-300">
-                    <button id="voiceSearch" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300" title="Voice Search">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <nav class="flex space-x-4">
-                    <a href="/" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
-                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                        Home
-                    </a>
-                    <a href="/cart" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
-                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        Cart
-                    </a>
-                    <a href="/logout" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
-                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Logout
-                    </a>
-                </nav>
-            </div>
-        </div>
-    </header>
-    <main class="container mx-auto px-4 py-12 flex-grow">
-        <div class="flex justify-center mb-6">
-            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+  <header class="bg-gradient-to-r from-green-700 to-green-900 text-white py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold tracking-tight">Back In Stock Notifier</h1>
+      <div class="flex items-center space-x-4">
+        <div class="relative flex items-center space-x-2">
+          <svg class="absolute left-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0"></path>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search products..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800 shadow-md w-64 transition-all duration-300"/>
+          <button id="voiceSearch" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300" title="Voice Search">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
             </svg>
+          </button>
         </div>
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Your Cart</h2>
-        <section class="my-8">
-            <div id="cart-items" class="space-y-4">
-                {% for item in cart %}
-                    <div class="flex items-center justify-between bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-                        <div class="flex items-center">
-                            <img src="{{ item.image_url }}" alt="{{ item.name }}" class="w-16 h-16 object-cover rounded-lg">
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold text-gray-800">{{ item.name }}</h3>
-                                <p class="text-gray-600">${{ item.price|round(2) }}</p>
-                            </div>
-                        </div>
-                        <button onclick="removeFromCart({{ item.id }})" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-300">Remove</button>
-                    </div>
-                {% endfor %}
-                {% if not cart %}
-                    <p id="empty-cart" class="text-center text-lg text-gray-700 bg-white p-6 rounded-xl shadow-md">Your cart is empty.</p>
-                {% else %}
-                    <div class="mt-6 text-center">
-                        <button onclick="purchaseCart()" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 font-semibold">Buy Now</button>
-                    </div>
-                {% endif %}
+        <nav class="flex space-x-4">
+          <a href="/" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>Home
+          </a>
+          <a href="/cart" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>Cart
+          </a>
+          <a href="/logout" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>Logout
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-12 flex-grow">
+    <div class="flex justify-center mb-6">
+      <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+    </div>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Your Cart</h2>
+    <section class="my-8">
+      <div id="cart-items" class="space-y-4">
+        <!-- Sample Cart Items -->
+        <div class="flex items-center justify-between bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center">
+            <img src="https://via.placeholder.com/64" alt="Product" class="w-16 h-16 object-cover rounded-lg">
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-800">Sample Product</h3>
+              <p class="text-gray-600">$19.99</p>
             </div>
-        </section>
-    </main>
-    <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white py-8 mt-auto">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
-                    <p class="text-sm">Back In Stock Notifier keeps you updated on your favorite products with instant restock alerts.</p>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <div class="flex flex-col space-y-2">
-                        <a href="/" class="text-sm hover:text-green-300 transition-all duration-300">Home</a>
-                        <a href="/contact" class="text-sm hover:text-green-300 transition-all duration-300">Contact</a>
-                        <a href="/about" class="text-sm hover:text-green-300 transition-all duration-300">About</a>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
-                    <form class="flex space-x-2">
-                        <input type="email" placeholder="Your email" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-gray-800">
-                        <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300">Subscribe</button>
-                    </form>
-                </div>
-            </div>
-            <div class="mt-8 text-center">
-                <p class="text-sm font-semibold">© 2025 Back In Stock Notifier. All rights reserved.</p>
-            </div>
+          </div>
+          <button onclick="removeFromCart(1)" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Remove</button>
         </div>
-    </footer>
-    <script>
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
 
-        const voiceSearchButton = document.getElementById('voiceSearch');
-        const searchInput = document.getElementById('searchInput');
+        <!-- Empty message fallback -->
+        <p id="empty-cart" class="text-center text-lg text-gray-700 bg-white p-6 rounded-xl shadow-md hidden">Your cart is empty.</p>
 
-        voiceSearchButton.addEventListener('click', () => {
-            recognition.start();
-            voiceSearchButton.classList.add('bg-green-700');
-            voiceSearchButton.disabled = true;
-        });
+        <div class="mt-6 text-center">
+          <button onclick="purchaseCart()" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-lg hover:from-green-700 hover:to-green-800 font-semibold">Buy Now</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            searchInput.value = transcript;
-            voiceSearchButton.classList.remove('bg-green-700');
-            voiceSearchButton.disabled = false;
-            window.location.href = `/?q=${encodeURIComponent(transcript)}`;
-        };
+  <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white py-8 mt-auto">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">About Us</h3>
+          <p class="text-sm">Back In Stock Notifier keeps you updated on your favorite products with instant restock alerts.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+          <div class="flex flex-col space-y-2">
+            <a href="/" class="text-sm hover:text-green-300">Home</a>
+            <a href="/contact" class="text-sm hover:text-green-300">Contact</a>
+            <a href="/about" class="text-sm hover:text-green-300">About</a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+          <form class="flex space-x-2">
+            <input type="email" placeholder="Your email" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-gray-800">
+            <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="mt-8 text-center">
+        <p class="text-sm font-semibold">© 2025 Back In Stock Notifier. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-        recognition.onend = () => {
-            voiceSearchButton.classList.remove('bg-green-700');
-            voiceSearchButton.disabled = false;
-        };
+  <script>
+    // Voice Search
+    const voiceButton = document.getElementById('voiceSearch');
+    const searchInput = document.getElementById('searchInput');
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
 
-        recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
-            voiceSearchButton.classList.remove('bg-green-700');
-            voiceSearchButton.disabled = false;
-            alert('Voice search error: ' + event.error);
-        };
+    voiceButton.addEventListener('click', () => {
+      recognition.start();
+    });
 
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = `/?q=${encodeURIComponent(query)}`;
-                }
-            }
-        });
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      searchInput.value = transcript;
+    };
 
-        async function removeFromCart(productId) {
-            const response = await fetch('/api/cart/remove', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId })
-            });
-            const result = await response.json();
-            alert(result.message);
-            location.reload();
-        }
+    // Simulated Remove and Buy
+    function removeFromCart(id) {
+      const cartItems = document.getElementById('cart-items');
+      const item = cartItems.querySelector(`button[onclick="removeFromCart(${id})"]`).closest('div');
+      item.remove();
+      if (cartItems.querySelectorAll('div').length === 0) {
+        document.getElementById('empty-cart').classList.remove('hidden');
+      }
+    }
 
-        async function purchaseCart() {
-            const response = await fetch('/api/cart/purchase', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const result = await response.json();
-            alert(result.message);
-            location.reload();
-        }
-    </script>
+    function purchaseCart() {
+      alert("Thank you for your purchase!");
+      document.getElementById('cart-items').innerHTML = '<p class="text-center text-lg text-gray-700 bg-white p-6 rounded-xl shadow-md">Your cart is empty.</p>';
+    }
+  </script>
 </body>
 </html>

@@ -45,8 +45,6 @@ def signup():
         
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        
-        # Check if email already exists
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
         existing_user = cursor.fetchone()
         
@@ -56,11 +54,10 @@ def signup():
             flash('Email already registered. Please use a different email or log in.', 'error')
             return redirect(url_for('signup'))
         
-        # Insert new user into the database
         try:
             cursor.execute(
                 'INSERT INTO users (email, password, role) VALUES (%s, %s, %s)',
-                (email, password, 'user')  # Store password as plain text
+                (email, password, 'user')
             )
             conn.commit()
             flash('Signup successful! Please log in.', 'success')
@@ -103,7 +100,6 @@ def login():
     
     return render_template('login.html')
 
-# Logout route
 @app.route('/logout')
 def logout():
     session.clear()
@@ -111,7 +107,6 @@ def logout():
     print("Session cleared on logout")
     return redirect(url_for('login'))
 
-# Index route
 @app.route('/')
 def index():
     if 'user_id' not in session:
@@ -133,7 +128,6 @@ def index():
     
     return render_template('index.html', cart=session.get('cart', []), products=products)
 
-# Contact route
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
@@ -162,12 +156,10 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
-# About route
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-# Cart page route
 @app.route('/cart')
 def cart_page():
     if 'user_id' not in session:
@@ -189,7 +181,6 @@ def cart_page():
                 product['price'] = float(product['price'])
         cursor.close()
         conn.close()
-        # Update cart with full product details
         updated_cart = []
         for item in cart:
             product = next((p for p in products if p['id'] == item['id']), None)
@@ -209,7 +200,6 @@ def cart_page():
     
     return render_template('cart.html', cart=session.get('cart', []), products=products)
 
-# Admin route
 @app.route('/admin')
 def admin():
     if 'user_id' not in session:
@@ -317,7 +307,7 @@ def update_stock():
                 print(f"Email error for {sub[4]}: {e}")
 
         cursor.execute(
-            'DELETE FROM subscriptions WHERE product_id = %s AND sizeshe = %s AND color = %s',
+            'DELETE FROM subscriptions WHERE product_id = %s AND size = %s AND color = %s',
             (product_id, size, color)
         )
         conn.commit()
@@ -326,94 +316,68 @@ def update_stock():
     conn.close()
     return jsonify({'message': 'Stock updated'})
 
+#  API Cart Route
 @app.route('/api/cart', methods=['GET', 'POST'])
 def cart():
     if 'user_id' not in session:
-        return jsonify({'message': 'Please log in to access cart'}), 401
+        return jsonify({'message': 'Login required'}), 401
+
+    if request.method == 'GET':
+        return jsonify(session.get('cart', []))
     
     if request.method == 'POST':
         data = request.json
-        product_id = data['productId']
-        
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM products WHERE id = %s', (product_id,))
-        product = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        
-        if not product:
-            return jsonify({'message': 'Product not found'}), 404
-        
-        product['sizes'] = eval(product['sizes'])
-        product['colors'] = eval(product['colors'])
-        product['price'] = float(product['price'])
-        
         if 'cart' not in session:
             session['cart'] = []
-        
-        # Prevent duplicates
-        existing_item = next((item for item in session['cart'] if item['id'] == product['id']), None)
-        if not existing_item:
-            session['cart'].append({
-                'id': product['id'],
-                'name': product['name'],
-                'price': product['price'],
-                'image_url': product['image_url'],
-                'sizes': product['sizes'],
-                'colors': product['colors']
-            })
-            session.modified = True
-            return jsonify({'message': 'Product added to cart'})
-        else:
-            return jsonify({'message': 'Product already in cart'})
-    
-    return jsonify(session.get('cart', []))
-
-@app.route('/api/cart/remove/<int:product_id>', methods=['POST'])
-def remove_from_cart(product_id):
-    if 'user_id' not in session:
-        return jsonify({'message': 'Please log in to access cart'}), 401
-    
-    if 'cart' in session:
-        session['cart'] = [item for item in session['cart'] if item['id'] != product_id]
+        session['cart'].append({
+            'id': data['id'],
+            'size': data.get('size'),
+            'color': data.get('color')
+        })
         session.modified = True
-        return jsonify({'message': 'Product removed from cart'})
-    return jsonify({'message': 'Cart is empty'})
-
-@app.route('/api/purchase', methods=['POST'])
-def purchase():
+        return jsonify({'message': 'Item added to cart'})
+# API route to remove item from cart
+@app.route('/api/cart/remove', methods=['POST'])
+def remove_from_cart():
     if 'user_id' not in session:
-        return jsonify({'message': 'Please log in to purchase'}), 401
+        return jsonify({'message': 'Login required'}), 401
+    
+    data = request.json
+    product_id = data.get('id')
+    size = data.get('size')
+    color = data.get('color')
     
     if 'cart' not in session or not session['cart']:
-        return jsonify({'message': 'Your cart is empty'}), 400
+        return jsonify({'message': 'Cart is empty'}), 400
     
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    # Remove matching item(s) by id, size, and color (to be precise)
+    new_cart = [
+        item for item in session['cart'] 
+        if not (item['id'] == product_id and item.get('size') == size and item.get('color') == color)
+    ]
     
-    try:
-        for item in session['cart']:
-            cursor.execute(
-                'INSERT INTO orders (user_id, product_id, name, price, image_url) VALUES (%s, %s, %s, %s, %s)',
-                (session['user_id'], item['id'], item['name'], item['price'], item['image_url'])
-            )
-        conn.commit()
-        
-        # Clear cart
-        session['cart'] = []
-        session.modified = True
-        return jsonify({'message': 'Purchase successful! Your order has been placed.'})
+    session['cart'] = new_cart
+    session.modified = True
     
-    except mysql.connector.Error as err:
-        print(f"Database error during purchase: {err}")
-        conn.rollback()
-        return jsonify({'message': 'Error processing purchase'}), 500
+    return jsonify({'message': 'Item removed from cart'})
+
+# API route to purchase items in the cart
+@app.route('/api/cart/purchase', methods=['POST'])
+def purchase_cart():
+    if 'user_id' not in session:
+        return jsonify({'message': 'Login required'}), 401
     
-    finally:
-        cursor.close()
-        conn.close()
+    cart = session.get('cart', [])
+    if not cart:
+        return jsonify({'message': 'Cart is empty'}), 400
+    
+    # For simplicity: just clear cart and respond success
+    session['cart'] = []
+    session.modified = True
+    
+    # TODO: Add payment processing and order saving logic here
+    
+    return jsonify({'message': 'Purchase successful!'})
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=False, port=port)
+    app.run(debug=True)
