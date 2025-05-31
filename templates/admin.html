@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Back In Stock Notifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-green-700 to-green-900 text-white py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Back In Stock Notifier</h1>
+            <nav class="flex space-x-6">
+                <a href="/admin" class="text-lg hover:text-green-200 transition-all duration-300">Admin Panel</a>
+                <a href="/logout" class="text-lg hover:text-green-200 transition-all duration-300">Logout</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full">
+            <div class="flex justify-center mb-6">
+                <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0v6l-8 4m0-10l-8 4m8-4v10m-8-6l8 4"></path>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Admin Panel - Update Stock</h2>
+            <form id="updateStockForm" class="space-y-6">
+                <div>
+                    <label for="product_id" class="block text-sm font-medium text-gray-700">Product ID</label>
+                    <input type="text" id="product_id" name="product_id" required
+                           class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300">
+                </div>
+                <div>
+                    <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
+                    <input type="text" id="size" name="size" required
+                           class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300">
+                </div>
+                <div>
+                    <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+                    <input type="text" id="color" name="color" required
+                           class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">In Stock</label>
+                    <div class="mt-2 flex items-center space-x-6 justify-center">
+                        <label class="flex items-center">
+                            <input type="radio" name="in_stock" value="true" class="mr-2 text-green-600 focus:ring-green-500">
+                            <span class="text-gray-700">Yes</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="in_stock" value="false" class="mr-2 text-green-600 focus:ring-green-500" checked>
+                            <span class="text-gray-700">No</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 font-semibold">
+                    Update Stock
+                </button>
+            </form>
+        </div>
+    </main>
+    <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-sm">Back In Stock Notifier keeps you updated on your favorite products with instant restock alerts.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="flex flex-col space-y-2">
+                        <a href="/" class="text-sm hover:text-green-300 transition-all duration-300">Home</a>
+                        <a href="/contact" class="text-sm hover:text-green-300 transition-all duration-300">Contact</a>
+                        <a href="/about" class="text-sm hover:text-green-300 transition-all duration-300">About</a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+                    <form class="flex space-x-2">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-gray-800">
+                        <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-sm font-semibold">© 2025 Back In Stock Notifier. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('updateStockForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/api/update-stock', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(result.message);
+        });
+    </script>
+</body>
+</html>

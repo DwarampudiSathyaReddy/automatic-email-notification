@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back In Stock Notifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .fade-transition {
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .fade-in {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1;
+        }
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+            z-index: 0;
+        }
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            border: 2px solid transparent;
+            border-image: linear-gradient(to right, #16a34a, #15803d) 1;
+        }
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #facc15;
+            color: #1f2937;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-green-700 to-green-900 text-white py-4 sticky top-0 z-10 shadow-lg">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Back In Stock Notifier</h1>
+            <div class="flex items-center space-x-4">
+                <div class="relative flex items-center space-x-2">
+                    <svg class="absolute left-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search products..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800 shadow-md w-64 transition-all duration-300">
+                    <button id="voiceSearch" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300" title="Voice Search">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <nav class="flex space-x-4">
+                    <a href="/" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Home
+                    </a>
+                    <a href="/cart" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        Cart
+                    </a>
+                    <a href="/logout" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                        Logout
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <!-- Hero Section with Dynamic Image Carousel -->
+        <section class="relative h-96 overflow-hidden">
+            <div id="carousel" class="carousel-container">
+                <div class="fade-transition min-w-full h-full bg-cover bg-center" style="background-image: url('/static/images/hero1.jpg');">
+                    <div class="absolute inset-0 bg-gradient-to-r from-green-700/30 to-green-600/30"></div>
+                </div>
+                <div class="fade-transition min-w-full h-full bg-cover bg-center" style="background-image: url('/static/images/hero2.jpg');">
+                    <div class="absolute inset-0 bg-gradient-to-r from-green-700/30 to-green-600/30"></div>
+                </div>
+                <div class="fade-transition min-w-full h-full bg-cover bg-center" style="background-image: url('/static/images/hero3.jpg');">
+                    <div class="absolute inset-0 bg-gradient-to-r from-green-700/30 to-green-600/30"></div>
+                </div>
+            </div>
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <button class="carousel-dot w-3 h-3 bg-white rounded-full opacity-50 hover:opacity-100 transition-opacity" data-index="0"></button>
+                <button class="carousel-dot w-3 h-3 bg-white rounded-full opacity-50 hover:opacity-100 transition-opacity" data-index="1"></button>
+                <button class="carousel-dot w-3 h-3 bg-white rounded-full opacity-50 hover:opacity-100 transition-opacity" data-index="2"></button>
+            </div>
+        </section>
+        <!-- Categories Section -->
+        <section class="container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Explore Categories</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="category-card bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-md hover:from-green-200 hover:to-green-300 hover:shadow-xl transition-all duration-300 text-center cursor-pointer" data-category="electronics">
+                    <svg class="w-14 h-14 text-green-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Electronics</h3>
+                </div>
+                <div class="category-card bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-md hover:from-green-200 hover:to-green-300 hover:shadow-xl transition-all duration-300 text-center cursor-pointer" data-category="clothing">
+                    <svg class="w-14 h-14 text-green-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h10M4 4h16v16H4V4z"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Clothing</h3>
+                </div>
+                <div class="category-card bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-md hover:from-green-200 hover:to-green-300 hover:shadow-xl transition-all duration-300 text-center cursor-pointer" data-category="home and garden">
+                    <svg class="w-14 h-14 text-green-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Home & Garden</h3>
+                </div>
+                <div class="category-card bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-md hover:from-green-200 hover:to-green-300 hover:shadow-xl transition-all duration-300 text-center cursor-pointer" data-category="sports">
+                    <svg class="w-14 h-14 text-green-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800">Sports</h3>
+                </div>
+            </div>
+        </section>
+        <!-- Products Section -->
+        <section id="products" class="container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Featured Products</h2>
+            <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </section>
+    </main>
+    <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-sm">Back In Stock Notifier keeps you updated on your favorite products with instant restock alerts.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="flex flex-col space-y-2">
+                        <a href="/" class="text-sm hover:text-green-300 transition-all duration-300">Home</a>
+                        <a href="/contact" class="text-sm hover:text-green-300 transition-all duration-300">Contact</a>
+                        <a href="/about" class="text-sm hover:text-green-300 transition-all duration-300">About</a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+                    <form class="flex space-x-2">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-gray-800">
+                        <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300">Subscribe</button>
+                    </form>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-green-300 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 4.56c-.89.39-1.84.65-2.83.77a4.92 4.92 0 002.16-2.72c-.95.56-2 .97-3.12 1.19a4.9 4.9 0 00-8.34 4.47A13.93 13.93 0 011.67 3.15a4.9 4.9 0 001.52 6.54c-.79-.02-1.53-.24-2.17-.6v.06a4.9 4.9 0 003.94 4.8c-.72.2-1.48.23-2.22.08a4.9 4.9 0 004.58 3.4A9.85 9.85 0 010 19.54a13.91 13.91 0 007.55 2.21c9.06 0 14.01-7.51 14.01-14.01 0-.21 0-.42-.01-.63A10 10 0 0024 4.56z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white hover:text-green-300 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.04c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10-4.48-10-10-10zm-5 15.65v-7.3h2.42l.36-2.81H7v-1.8c0-.81.23-1.37 1.4-1.37h1.5V5.21c-.26-.03-1.15-.11-2.19-.11-2.17 0-3.65 1.33-3.65 3.76v2.1H3v2.81h1.07v7.3H7zm5.5-10.47h-1.92v2.81H12v8.31h2.81v-8.31h1.92l.29-2.81zm7.43 2.81v7.3h-2.81v-7.3h-1.92l-.29 2.81H12v-2.81h2.81V7.18h-2.81V4.37h1.92l.29 2.81h1.92z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-white hover:text-green-300 transition-all duration-300">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.04c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10-4.48-10-10-10zm4.5 14.96h-9v-1.5h9v1.5zm0-3h-9v-1.5h9v1.5zm-4.5-6.46c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-sm font-semibold">© 2025 Back In Stock Notifier. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Carousel Functionality with Fade Transition
+        const carousel = document.getElementById('carousel');
+        const slides = carousel.children;
+        const dots = document.querySelectorAll('.carousel-dot');
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('fade-in');
+                slides[i].classList.add('fade-out');
+            }
+            slides[index].classList.remove('fade-out');
+            slides[index].classList.add('fade-in');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('opacity-100', i === index);
+                dot.classList.toggle('opacity-50', i !== index);
+            });
+            currentIndex = index;
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showSlide(currentIndex);
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                showSlide(parseInt(dot.dataset.index));
+            });
+        });
+
+        setInterval(nextSlide, 5000);
+        showSlide(0);
+
+        // Category Card Click Handler
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.dataset.category;
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = category;
+                searchInput.focus();
+            });
+        });
+
+        // Search and Product Functionality
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const voiceSearchButton = document.getElementById('voiceSearch');
+        const searchInput = document.getElementById('searchInput');
+
+        voiceSearchButton.addEventListener('click', () => {
+            recognition.start();
+            voiceSearchButton.classList.add('bg-green-700');
+            voiceSearchButton.disabled = true;
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            searchInput.value = transcript;
+            voiceSearchButton.classList.remove('bg-green-700');
+            voiceSearchButton.disabled = false;
+            searchProducts(transcript);
+        };
+
+        recognition.onend = () => {
+            voiceSearchButton.classList.remove('bg-green-700');
+            voiceSearchButton.disabled = false;
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            voiceSearchButton.classList.remove('bg-green-700');
+            voiceSearchButton.disabled = false;
+            alert('Voice search error: ' + event.error);
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.trim();
+                if (query) {
+                    searchProducts(query);
+                }
+            }
+        });
+
+        async function searchProducts(query) {
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const products = await response.json();
+                const container = document.getElementById('productsContainer');
+                container.innerHTML = '';
+                if (products.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-600 col-span-full">No products found.</p>';
+                    return;
+                }
+                products.forEach((product, index) => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 relative';
+                    productCard.innerHTML = `
+                        ${index === 0 ? '<span class="badge">Best Seller</span>' : ''}
+                        <img src="${product.image_url}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">${product.name}</h3>
+                        <p class="text-gray-600">$${product.price.toFixed(2)}</p>
+                        <p class="text-sm text-gray-500">Sizes: ${product.sizes.join(', ')}</p>
+                        <p class="text-sm text-gray-500">Colors: ${product.colors.join(', ')}</p>
+                        <p class="text-sm ${product.in_stock ? 'text-green-600' : 'text-red-600'}">
+                            ${product.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </p>
+                        ${!product.in_stock ? `
+                            <form class="subscribe-form mt-4 space-y-2" data-product-id="${product.id}">
+                                <select class="size-select border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                                </select>
+                                <select class="color-select border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    ${product.colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                                </select>
+                                <input type="email" class="email-input border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Your email" required>
+                                <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 w-full">
+                                    Subscribe
+                                </button>
+                            </form>
+                        ` : `
+                            <button class="add-to-cart bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 w-full mt-4"
+                                    data-product-id="${product.id}">
+                                Add to Cart
+                            </button>
+                        `}
+                    `;
+                    container.appendChild(productCard);
+                });
+
+                document.querySelectorAll('.subscribe-form').forEach(form => {
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const productId = form.dataset.productId;
+                        const size = form.querySelector('.size-select').value;
+                        const color = form.querySelector('.color-select').value;
+                        const email = form.querySelector('.email-input').value;
+                        const response = await fetch('/api/subscribe', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId, size, color, email })
+                        });
+                        const result = await response.json();
+                        alert(result.message);
+                    });
+                });
+
+                document.querySelectorAll('.add-to-cart').forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const productId = button.dataset.productId;
+                        const response = await fetch('/api/cart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId })
+                        });
+                        const result = await response.json();
+                        alert(result.message);
+                    });
+                });
+
+                window.history.pushState({}, '', `/?q=${encodeURIComponent(query)}`);
+            } catch (error) {
+                console.error('Error searching products:', error);
+                document.getElementById('productsContainer').innerHTML = '<p class="text-center text-red-600 col-span-full">Error loading products.</p>';
+            }
+        }
+
+        async function loadProducts() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q') || '';
+            if (query) {
+                searchInput.value = query;
+                searchProducts(query);
+            } else {
+                try {
+                    const response = await fetch('/api/products');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const products = await response.json();
+                    const container = document.getElementById('productsContainer');
+                    container.innerHTML = '';
+                    products.forEach((product, index) => {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 relative';
+                        productCard.innerHTML = `
+                            ${index === 0 ? '<span class="badge">Best Seller</span>' : ''}
+                            <img src="${product.image_url}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">${product.name}</h3>
+                            <p class="text-gray-600">$${product.price.toFixed(2)}</p>
+                            <p class="text-sm text-gray-500">Sizes: ${product.sizes.join(', ')}</p>
+                            <p class="text-sm text-gray-500">Colors: ${product.colors.join(', ')}</p>
+                            <p class="text-sm ${product.in_stock ? 'text-green-600' : 'text-red-600'}">
+                                ${product.in_stock ? 'In Stock' : 'Out of Stock'}
+                            </p>
+                            ${!product.in_stock ? `
+                                <form class="subscribe-form mt-4 space-y-2" data-product-id="${product.id}">
+                                    <select class="size-select border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
+                                    </select>
+                                    <select class="color-select border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        ${product.colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+                                    </select>
+                                    <input type="email" class="email-input border border-gray-300 rounded-lg px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Your email" required>
+                                    <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 w-full">
+                                        Subscribe
+                                    </button>
+                                </form>
+                            ` : `
+                                <button class="add-to-cart bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 w-full mt-4"
+                                        data-product-id="${product.id}">
+                                    Add to Cart
+                                </button>
+                            `}
+                        `;
+                        container.appendChild(productCard);
+                    });
+
+                    document.querySelectorAll('.subscribe-form').forEach(form => {
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const productId = form.dataset.productId;
+                            const size = form.querySelector('.size-select').value;
+                            const color = form.querySelector('.color-select').value;
+                            const email = form.querySelector('.email-input').value;
+                            const response = await fetch('/api/subscribe', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ productId, size, color, email })
+                            });
+                            const result = await response.json();
+                            alert(result.message);
+                        });
+                    });
+
+                    document.querySelectorAll('.add-to-cart').forEach(button => {
+                        button.addEventListener('click', async () => {
+                            const productId = button.dataset.productId;
+                            const response = await fetch('/api/cart', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ productId })
+                            });
+                            const result = await response.json();
+                            alert(result.message);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error loading products:', error);
+                    document.getElementById('productsContainer').innerHTML = '<p class="text-center text-red-600 col-span-full">Error loading products.</p>';
+                }
+            }
+        }
+
+        loadProducts();
+    </script>
+</body>
+</html>

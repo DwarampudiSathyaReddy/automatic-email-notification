@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Back In Stock Notifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-green-700 to-green-900 text-white py-4 sticky top-0 z-10 shadow-lg">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Back In Stock Notifier</h1>
+            <nav class="flex space-x-4">
+                <a href="{{ url_for('signup') }}" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                    Signup
+                </a>
+                <a href="{{ url_for('login') }}" class="flex items-center text-lg hover:text-green-200 transition-all duration-300">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    Login
+                </a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center">
+        <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-md">
+            <div class="flex justify-center mb-6">
+                <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Sign Up</h1>
+            <!-- Flash messages display -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-6 space-y-2">
+                        {% for category, message in messages %}
+                            <div class="p-4 rounded-lg text-center {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <!-- Signup form -->
+            <form action="{{ url_for('signup') }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required
+                           class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" required
+                           class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300">
+                </div>
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 font-semibold">
+                    Sign Up
+                </button>
+            </form>
+            <p class="mt-4 text-center text-sm text-gray-600">
+                Already have an account? <a href="{{ url_for('login') }}" class="text-green-600 hover:text-green-800">Log in</a>
+            </p>
+        </div>
+    </main>
+    <footer class="bg-gradient-to-r from-green-900 to-green-800 text-white py-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-sm">Back In Stock Notifier keeps you updated on your favorite products with instant restock alerts.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="flex flex-col space-y-2">
+                        <a href="{{ url_for('index') }}" class="text-sm hover:text-green-300 transition-all duration-300">Home</a>
+                        <a href="{{ url_for('contact') }}" class="text-sm hover:text-green-300 transition-all duration-300">Contact</a>
+                        <a href="{{ url_for('about') }}" class="text-sm hover:text-green-300 transition-all duration-300">About</a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Stay Updated</h3>
+                    <form class="flex space-x-2">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 w-full text-gray-800">
+                        <button type="submit" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-sm font-semibold">© 2025 Back In Stock Notifier. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
